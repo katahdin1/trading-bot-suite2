@@ -13,4 +13,7 @@ def send_telegram(message):
         requests.post(url, data=data)
     except Exception as e:
         print(f"Telegram error: {e}")
+from utils.telegram import send_telegram
+
+send_telegram("✅ Daily and weekly reports sent via email.")
 

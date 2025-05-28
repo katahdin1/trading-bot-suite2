@@ -42,4 +42,32 @@ def main():
 
 if __name__ == "__main__":
     main()
+    from scheduler.schedule_reports import run_scheduled_reports
 
+    # ... your bot logic
+
+    if __name__ == "__main__":
+        try:
+            # your bot start
+            print("🚀 Bot running...")
+
+            # run your bot loop/trading logic here
+
+            run_scheduled_reports()
+
+        except Exception as e:
+            from utils.error_handler import notify_error
+            notify_error(e, context="Live Bot Failure")
+from scheduler import schedule_reports
+
+if __name__ == "__main__":
+    # Your trading bot logic...
+    # run_strategy()
+
+    # Start scheduler in background
+    import threading
+    threading.Thread(target=schedule_reports, daemon=True).start()
+
+    # Optional: keep main alive
+    while True:
+        time.sleep(1)
