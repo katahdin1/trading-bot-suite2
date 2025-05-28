@@ -1,0 +1,82 @@
+{
+  "strategies": [
+    {
+      "symbol": "SPY",
+      "name": "CALL-425",
+      "enabled": true,
+      "type": "call",
+      "quantity": 1,
+      "target": 0.2,
+      "stop": 0.1,
+      "trailing_stop": 0.08,
+      "breakeven_trigger": 0.12,
+      "strike": 425,
+      "expiry": "2025-06-27"
+    },
+    {
+      "symbol": "SPY",
+      "name": "CALL-430",
+      "enabled": true,
+      "type": "call",
+      "quantity": 1,
+      "target": 0.2,
+      "stop": 0.1,
+      "trailing_stop": 0.08,
+      "breakeven_trigger": 0.12,
+      "strike": 430,
+      "expiry": "2025-06-27"
+    },
+    {
+      "symbol": "SPY",
+      "name": "CALL-435",
+      "enabled": true,
+      "type": "call",
+      "quantity": 1,
+      "target": 0.2,
+      "stop": 0.1,
+      "trailing_stop": 0.08,
+      "breakeven_trigger": 0.12,
+      "strike": 435,
+      "expiry": "2025-06-27"
+    },
+    {
+      "symbol": "SPY",
+      "name": "PUT-425",
+      "enabled": true,
+      "type": "put",
+      "quantity": 1,
+      "target": 0.2,
+      "stop": 0.1,
+      "trailing_stop": 0.08,
+      "breakeven_trigger": 0.12,
+      "strike": 425,
+      "expiry": "2025-06-27"
+    },
+    {
+      "symbol": "SPY",
+      "name": "PUT-430",
+      "enabled": true,
+      "type": "put",
+      "quantity": 1,
+      "target": 0.2,
+      "stop": 0.1,
+      "trailing_stop": 0.08,
+      "breakeven_trigger": 0.12,
+      "strike": 430,
+      "expiry": "2025-06-27"
+    },
+    {
+      "symbol": "SPY",
+      "name": "PUT-435",
+      "enabled": true,
+      "type": "put",
+      "quantity": 1,
+      "target": 0.2,
+      "stop": 0.1,
+      "trailing_stop": 0.08,
+      "breakeven_trigger": 0.12,
+      "strike": 435,
+      "expiry": "2025-06-27"
+    }
+  ]
+}

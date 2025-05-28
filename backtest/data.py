@@ -1,10 +1,9 @@
 import yfinance as yf
 import pandas as pd
 
-def get_spy_data(start="2022-01-01", end="2024-12-31"):
-    df = yf.download("SPY", start=start, end=end)
-    df = df[["Close"]].rename(columns={"Close": "price"})
-    df["ma_50"] = df["price"].rolling(50).mean()
-    df.dropna(inplace=True)
+def get_spy_data(period="6mo", interval="1d"):
+    df = yf.download("SPY", period=period, interval=interval, auto_adjust=True)
+    df = df.dropna()
+    df.index.name = "Date"
+    df.reset_index(inplace=True)
     return df
-

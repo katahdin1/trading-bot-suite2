@@ -1,23 +1,24 @@
-import os
+# utils/logger.py
 import csv
+import os
 from datetime import datetime
 
-def log_trade(signal, strategy_name, details):
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+def log_trade(action, strategy, details):
     date_str = datetime.now().strftime("%Y-%m-%d")
-    log_dir = "logs"
-    log_file = os.path.join(log_dir, f"{date_str}.csv")
+    filename = f"{LOG_DIR}/{date_str}.csv"
 
-    os.makedirs(log_dir, exist_ok=True)
-
-    file_exists = os.path.isfile(log_file)
-    with open(log_file, "a", newline="") as f:
+    file_exists = os.path.isfile(filename)
+    with open(filename, mode="a", newline="") as f:
         writer = csv.writer(f)
         if not file_exists:
-            writer.writerow(["timestamp", "signal", "strategy", "details"])
+            writer.writerow(["timestamp", "action", "strategy", "details"])
 
         writer.writerow([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            signal,
-            strategy_name,
+            datetime.now().isoformat(),
+            action,
+            strategy,
             details
         ])

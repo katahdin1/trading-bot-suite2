@@ -1,39 +1,30 @@
 import json
 import time
 import threading
+from datetime import datetime
 
 from bot.runner import run_strategy
-from utils.broker import execute_order
-from utils.logger import log_trade
+from scheduler.schedule_runner import start_scheduler
 from utils.telegram import send_telegram
 from utils.discord import send_discord
-from utils.paper import track_trade
-from scheduler.schedule_runner import start_scheduler
-
-# ✅ Format buy/sell messages
-def format_trade_message(signal, strat):
-    msg = (
-        f"{'📈' if signal == 'buy' else '📉'} {signal.upper()} SIGNAL\n"
-        f"Symbol: {strat['symbol']}\n"
-        f"Strategy: {strat['name']}\n"
-        f"Quantity: {strat.get('quantity', 1)}\n"
-        f"Entry: {strat.get('entry_price', 'MKT')}\n"
-        f"Target: {strat.get('target', 'N/A')}\n"
-        f"Stop: {strat.get('stop', 'N/A')}"
-    )
-
-    if strat.get("type") in ["call", "put"]:
-        msg += (
-            f"\nStrike: {strat.get('strike')} {strat['type'].upper()}"
-            f"\nExpiry: {strat.get('expiry')}"
-        )
-
-    return msg
+from utils.mock_broker import simulate_option_order
+from utils.logger import log_trade
 
 
 def load_config():
     with open("config/config.json") as f:
         return json.load(f)
+
+
+def format_trade_message(trade):
+    return (
+        f"📈 MOCK OPTION TRADE\n"
+        f"Symbol: {trade['symbol']}\n"
+        f"Type: {trade['type'].upper()} | Strike: {trade['strike']} | Expiry: {trade['expiry']}\n"
+        f"Side: {trade['side'].upper()} | Qty: {trade['quantity']}\n"
+        f"Entry: ${trade['entry_price']:.2f} → Exit: ${trade['exit_price']:.2f}\n"
+        f"Time: {trade['timestamp']}"
+    )
 
 
 def run_bot():
@@ -48,20 +39,29 @@ def run_bot():
             signal = run_strategy(strat)
 
             if signal in ["buy", "sell"]:
+                # ✅ PAPER MODE = SIMULATED OPTIONS TRADE
                 if mode == "paper":
-                    track_trade(strat["symbol"], signal, strat)
+                    trade = simulate_option_order(
+                        symbol=strat["symbol"],
+                        side=signal,
+                        option_type=strat.get("type", "call"),
+                        strike=strat.get("strike", 430),
+                        expiry=strat.get("expiry", "2025-06-21"),
+                        quantity=strat.get("quantity", 1),
+                        target=strat.get("target", 0.20),
+                        stop=strat.get("stop", 0.10),
+                        trailing_stop=strat.get("trailing_stop", 0.08),
+                        breakeven_trigger=strat.get("breakeven_trigger", 0.12)
+                    )
+
+                    msg = format_trade_message(trade)
+                    send_telegram(msg)
+                    send_discord(msg)
+                    log_trade("mock_option", strat["name"], msg)
+
                 else:
-                    execute_order(strat["symbol"], signal, strat)
-
-                # ✅ Generate message
-                msg = format_trade_message(signal, strat)
-
-                # ✅ Send alerts
-                send_telegram(msg)
-                send_discord(msg)
-
-                # ✅ Log trade
-                log_trade(signal, strat["name"], msg)
+                    # ❗️LIVE BROKER: plug in real `execute_order()` here when ready
+                    pass
 
         except Exception as e:
             msg = f"⚠️ Error in {strat['name']}: {e}"
@@ -73,11 +73,8 @@ def run_bot():
 
 if __name__ == "__main__":
     print("🚀 Bot starting...")
-
-    # ✅ Start report scheduler
     threading.Thread(target=start_scheduler, daemon=True).start()
 
-    # ✅ Continuous bot loop
     while True:
         run_bot()
-        time.sleep(60)
+        time.sleep(60)  # Adjust this interval as needed
