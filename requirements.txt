@@ -4,4 +4,5 @@ numpy
 matplotlib
 fpdf
 schedule
+pip install python-dotenv
 

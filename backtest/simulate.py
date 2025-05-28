@@ -64,10 +64,8 @@ def run_simulation():
 
 if __name__ == "__main__":
     run_simulation()
-from backtest.data import get_spy_data
 from backtest.strategy import spy_momentum_strategy
 from backtest.metrics import evaluate_strategy
-from utils.emailer import send_email_report
 
 def run_simulation():
     df = get_spy_data()
