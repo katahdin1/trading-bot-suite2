@@ -21,4 +21,7 @@ def schedule_reports():
     while True:
         schedule.run_pending()
         time.sleep(60)
+from utils.telegram import send_telegram
+
+send_telegram("✅ GitHub Action: Reports generated and emailed.")
 

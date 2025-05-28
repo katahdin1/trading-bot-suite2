@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Replit & Virtualenv
+.venv/
+.pythonlibs/
+replit.nix
+
+# Logs / data
+*.log
+*.csv
+*.db
+output/
+charts/
+
+# Secrets
+.env
+*.pem
+*.key
