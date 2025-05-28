@@ -1,10 +1,10 @@
 import yfinance as yf
 import pandas as pd
 
-def get_spy_data(interval='5m', period='60d'):
-    spy = yf.Ticker("SPY")
-    df = spy.history(interval=interval, period=period)
-    df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
+def get_spy_data(start="2022-01-01", end="2024-12-31"):
+    df = yf.download("SPY", start=start, end=end)
+    df = df[["Close"]].rename(columns={"Close": "price"})
+    df["ma_50"] = df["price"].rolling(50).mean()
     df.dropna(inplace=True)
-    df.index = pd.to_datetime(df.index)
     return df
+

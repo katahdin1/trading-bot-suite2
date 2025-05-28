@@ -19,3 +19,7 @@ charts/
 .env
 *.pem
 *.key
+
+.env
+__pycache__/
+*.log

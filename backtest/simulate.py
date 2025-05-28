@@ -1,4 +1,4 @@
-from data import get_spy_data
+from backtest.data import get_spy_data
 from strategy import generate_signals
 from metrics import calculate_pnl
 import pandas as pd
@@ -60,6 +60,28 @@ def run_simulation():
         body="Attached is the simulated trade log from your backtest.",
         to_email=os.getenv("EMAIL_USER"),
         attachments=["simulated_trades.csv"]
+    )
+
+if __name__ == "__main__":
+    run_simulation()
+from backtest.data import get_spy_data
+from backtest.strategy import spy_momentum_strategy
+from backtest.metrics import evaluate_strategy
+from utils.emailer import send_email_report
+
+def run_simulation():
+    df = get_spy_data()
+    trades = spy_momentum_strategy(df)
+    results = evaluate_strategy(trades)
+
+    print("📊 Simulation Results:")
+    print(results)
+
+    # Optional: Email PDF or text summary
+    send_email_report(
+        subject="🧪 Backtest Summary",
+        body=str(results),
+        to_email="kysenick@gmail.com"
     )
 
 if __name__ == "__main__":

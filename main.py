@@ -1,15 +1,19 @@
 import json
+import time
+import threading
+
 from bot.runner import run_strategy
 from utils.broker import execute_order
 from utils.logger import log_trade
 from utils.telegram import send_telegram
 from utils.paper import track_trade
+from scheduler.schedule_runner import start_scheduler  # ✅ Corrected import
 
 def load_config():
     with open("config/config.json") as f:
         return json.load(f)
 
-def main():
+def run_bot():
     config = load_config()
     mode = config.get("mode", "paper")
 
@@ -41,33 +45,12 @@ def main():
             send_telegram(msg)
 
 if __name__ == "__main__":
-    main()
-    from scheduler.schedule_reports import run_scheduled_reports
+    print("🚀 Bot starting...")
 
-    # ... your bot logic
+    # ✅ Start the report scheduler in a background thread
+    threading.Thread(target=start_scheduler, daemon=True).start()
 
-    if __name__ == "__main__":
-        try:
-            # your bot start
-            print("🚀 Bot running...")
-
-            # run your bot loop/trading logic here
-
-            run_scheduled_reports()
-
-        except Exception as e:
-            from utils.error_handler import notify_error
-            notify_error(e, context="Live Bot Failure")
-from scheduler import schedule_reports
-
-if __name__ == "__main__":
-    # Your trading bot logic...
-    # run_strategy()
-
-    # Start scheduler in background
-    import threading
-    threading.Thread(target=schedule_reports, daemon=True).start()
-
-    # Optional: keep main alive
+    # ✅ Continuous trading bot loop
     while True:
-        time.sleep(1)
+        run_bot()
+        time.sleep(60)  # Run every 60 seconds (adjust if needed)
