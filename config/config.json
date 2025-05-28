@@ -1,1 +1,13 @@
+{
+  "mode": "paper",
+  "strategies": [
+    {
+      "name": "spy_momentum",
+      "symbol": "SPY",
+      "enabled": true,
+      "profit_target": 0.03,
+      "stop_loss": 0.01
+    }
+  ]
+}
 
