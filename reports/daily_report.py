@@ -1,27 +1,40 @@
 from utils.emailer import send_email_report
-from utils.telegram import send_telegram
 from utils.discord import send_discord
+import pandas as pd
+import os
+from datetime import datetime
 
-def send_daily_trade_report():
-    subject = "📩 Daily Trade Report"
-    body = (
-        "🗓 **Daily Summary**\n"
-        "- Total trades: 5\n"
-        "- Wins: 3\n"
-        "- Losses: 2\n"
-        "- Net PnL: +$420\n"
-        "- Strategy: SPY Momentum\n"
+def send_daily_report():
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_file = f"logs/trades_{today}.csv"
+
+    if not os.path.exists(log_file):
+        print(f"⚠️ No trades found for {today}")
+        return
+
+    trades_df = pd.read_csv(log_file)
+
+    # Optional filter
+    trades_df = trades_df[trades_df["confidence"].astype(float) >= 4]
+
+    summary_lines = []
+    for _, row in trades_df.iterrows():
+        summary_lines.append(
+            f"{row['symbol']} {row['action'].upper()} | Entry: {row['entry_price']} | Exit: {row.get('exit_price', 'N/A')} | Return: {row.get('return', 'N/A')} | Confidence: {row.get('confidence', 'N/A')}"
+        )
+
+    body = "\n".join(summary_lines)
+    subject = f"📊 Daily Trade Summary – {today}"
+
+    send_email_report(
+        subject=subject,
+        body=body,
+        to_email=os.getenv("EMAIL_USER"),
+        attachments=[log_file],
     )
-    to_email = "your-email@example.com"  # TODO: Replace or use os.getenv
-    from datetime import datetime
-    log_file = f"logs/{datetime.now().strftime('%Y-%m-%d')}.csv"
-    attachments = [log_file] if os.path.exists(log_file) else []
-  # Optional, replace with actual path
 
-    # Send via all channels
-    send_email_report(subject, body, to_email, attachments)
-    send_telegram(f"✅ Daily Report Sent\n{body}")
-    send_discord(f"✅ Daily Report Sent\n{body}")
+    send_discord(f"📨 {subject}\n\n{body}")
+
 import os
 from datetime import datetime
 from utils.emailer import send_email_report

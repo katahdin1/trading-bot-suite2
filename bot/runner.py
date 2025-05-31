@@ -1,23 +1,24 @@
-import random
+import importlib
 
-def run_strategy(config):
-    price = random.uniform(410, 430)
-    ma = 420  # Placeholder moving average
-    print(f"{config['name']}: Price={price:.2f}, MA={ma:.2f}")
+def run_strategy(strategy_config):
+    """
+    Dynamically load and run the strategy defined in the config.
+    The strategy must return (signal, confidence) tuple.
+    """
+    strategy_name = strategy_config["name"]
+    module = importlib.import_module("backtest.strategy")
+    strategy_func = getattr(module, strategy_name)
 
-    if price > ma + 1:
-        return "buy"
-    elif price < ma - 1:
-        return "sell"
-    return "hold"
-from reports.daily_report import send_daily_trade_report
-from reports.weekly_report import send_weekly_summary
+    # Load historical data
+    from backtest.data import get_spy_data
+    df = get_spy_data(interval="1d", range="7d")  # Short-term for live logic
 
-# Daily end-of-day trigger
-send_daily_trade_report()
+    # Run strategy
+    result = strategy_func(df, config=strategy_config)
 
-# Weekly trigger (e.g., every Friday)
-import datetime
-if datetime.datetime.today().weekday() == 4:  # Friday
-    send_weekly_summary()
+    # Result must be a tuple (signal, confidence)
+    if isinstance(result, tuple) and len(result) == 2:
+        return result
+    else:
+        raise ValueError(f"{strategy_name} did not return (signal, confidence)")
 

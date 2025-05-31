@@ -1,38 +1,38 @@
-import smtplib
-import ssl
 import os
-from email.message import EmailMessage
+import smtplib
+import pandas as pd
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+from datetime import datetime
 
-def send_email_report(subject, body, to_email, attachments=[], smtp_server="smtp.gmail.com", port=465):
-    sender_email = os.getenv("EMAIL_USER")
-    sender_password = os.getenv("EMAIL_PASS")
+def send_email_report(subject, body, to_email, attachments=None):
+    smtp_server = os.getenv("EMAIL_SERVER")
+    smtp_port = int(os.getenv("EMAIL_PORT", 587))
+    smtp_user = os.getenv("EMAIL_USER")
+    smtp_pass = os.getenv("EMAIL_PASSWORD")
 
-    if not sender_email or not sender_password:
-        print("❌ EMAIL_USER or EMAIL_PASS is not set. Please check your .env file.")
-        return
-
-    msg = EmailMessage()
-    msg["From"] = sender_email
+    msg = MIMEMultipart()
+    msg["From"] = smtp_user
     msg["To"] = to_email
     msg["Subject"] = subject
-    msg.set_content(body)
 
-    for file_path in attachments:
+    msg.attach(MIMEText(body, "plain"))
+
+    for file_path in attachments or []:
         try:
             with open(file_path, "rb") as f:
-                file_data = f.read()
-                filename = file_path.split("/")[-1]
-                msg.add_attachment(
-                    file_data,
-                    maintype="application",
-                    subtype="octet-stream",
-                    filename=filename
-                )
+                part = MIMEApplication(f.read(), Name=os.path.basename(file_path))
+                part["Content-Disposition"] = f"attachment; filename=\"{os.path.basename(file_path)}\""
+                msg.attach(part)
         except Exception as e:
             print(f"⚠️ Error attaching {file_path}: {e}")
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
-        print("✅ Email sent successfully.")
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.send_message(msg)
+            print("✅ Email sent successfully.")
+    except Exception as e:
+        print(f"❌ Email failed: {e}")

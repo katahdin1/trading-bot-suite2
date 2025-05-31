@@ -1,12 +1,58 @@
 {
+    "mode": "",
+    "strategies": [
+      {
+        "name": "RSI Reversal",
+        "symbol": "SPY",
+        "enabled": true,
+        "entry_rsi": 30,
+        "profit_target": 1.05,
+        "stop_loss": 0.98,
+        "quantity": 1,
+        "type": "call",
+        "strike": 415,
+        "expiry": "2025-06-21"
+      },
+      {
+        "name": "spy_momentum",
+        "symbol": "SPY",
+        "enabled": true,
+        "profit_target": 1.02,
+        "stop_loss": 0.99,
+        "trailing_stop_pct": 0.02,
+        "quantity": 1,
+        "type": "call",
+        "strike": 418,
+        "expiry": "2025-06-21"
+      }
+    ]
+  }
+{
   "mode": "paper",
   "strategies": [
     {
-      "name": "spy_momentum",
+      "name": "spy_options",
+      "symbol": "SPY",
+      "type": "call",
+      "strike": 420,
+      "expiry": "2025-06-07",
+      "entry_price": 2.00,
+      "take_profit": 2.50,
+      "stop_loss": 1.80,
+      "enabled": true
+    }
+  ]
+}
+{
+  "mode": "paper",
+  "strategies": [
+    {
+      "name": "spy_rsi",
       "symbol": "SPY",
       "enabled": true,
-      "profit_target": 0.03,
-      "stop_loss": 0.01
+      "entry_rsi": 30,
+      "profit_target": 1.05,
+      "stop": 0.97
     }
   ]
 }

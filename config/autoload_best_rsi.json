@@ -1,0 +1,5 @@
+{
+  "strategy": "spy_rsi",
+  "symbol": "SPY",
+  "enabled": true
+}
